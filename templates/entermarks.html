@@ -1,0 +1,235 @@
+{% load static %}
+<html>
+    <head>
+        <link rel="stylesheet" href="{% static 'entermarks.css'%}">
+    </head>
+    <body>
+      <button class="button">Edit</button>
+      <button class="button">Save</button>
+      <table class="table">
+        <thead>
+          <tr class="shead">
+            <td colspan="6">Subject Name : Data Structures  </td>
+            <td colspan="6"> Subject Code : CS255 </td>
+          </tr>
+      <tr>
+        <td colspan="2">Roll No </td>
+        <td colspan="2"> Student Name </td>
+        <td colspan="2"> Mid Marks </td>
+        <td colspan="2"> Sem Marks </td>
+        <td colspan="2"> Grade </td>
+        <td colspan="2"> GPA </td>
+      </tr>
+      
+    </thead>
+    <tbody>
+      <tr>
+        <td colspan="2">23456 </td>
+        <td colspan="2"> vinod </td>
+        <td colspan="2"> 12 </td>
+        <td colspan="2">30  </td>
+        <td colspan="2"> D </td>
+        <td colspan="2"> 5 </td>
+      </tr>
+      <tr>
+        <td colspan="2">23455 </td>
+        <td colspan="2"> Anand </td>
+        <td colspan="2"> 10 </td>
+        <td colspan="2">22 </td>
+        <td colspan="2"> P </td>
+        <td colspan="2"> 5 </td>
+      </tr>
+      <tr>
+        <td colspan="2">20456 </td>
+        <td colspan="2"> Harsh </td>
+        <td colspan="2"> 19 </td>
+        <td colspan="2">37  </td>
+        <td colspan="2"> A </td>
+        <td colspan="2"> 5 </td>
+      </tr>
+      <tr>
+        <td colspan="2">23406 </td>
+        <td colspan="2"> Jessica </td>
+        <td colspan="2"> 16 </td>
+        <td colspan="2">44 </td>
+        <td colspan="2"> D </td>
+        <td colspan="2"> 5 </td>
+      </tr>
+      <tr>
+        <td colspan="2">29456 </td>
+        <td colspan="2"> Divya </td>
+        <td colspan="2"> 12 </td>
+        <td colspan="2">30  </td>
+        <td colspan="2"> B </td>
+        <td colspan="2"> 3 </td>
+      </tr>
+      <tr>
+        <td colspan="2">41456 </td>
+        <td colspan="2"> Sheil </td>
+        <td colspan="2"> 14 </td>
+        <td colspan="2">12 </td>
+        <td colspan="2"> D </td>
+        <td colspan="2"> 2 </td>
+      </tr>
+      <tr>
+        <td colspan="2">66456 </td>
+        <td colspan="2"> Macus </td>
+        <td colspan="2"> 12 </td>
+        <td colspan="2">30  </td>
+        <td colspan="2"> D </td>
+        <td colspan="2"> 5 </td>
+      </tr>
+      <tr>
+        <td colspan="2">63456 </td>
+        <td colspan="2">Mars </td>
+        <td colspan="2"> 12 </td>
+        <td colspan="2">20  </td>
+        <td colspan="2"> C </td>
+        <td colspan="2"> 6 </td>
+      </tr>
+      <tr>
+        <td colspan="2">43456 </td>
+        <td colspan="2"> sun</td>
+        <td colspan="2"> 9 </td>
+        <td colspan="2">40  </td>
+        <td colspan="2"> A </td>
+        <td colspan="2"> 8 </td>
+      </tr>
+      <tr>
+        <td colspan="2">23456 </td>
+        <td colspan="2"> Mahesh </td>
+        <td colspan="2"> 12 </td>
+        <td colspan="2">30  </td>
+        <td colspan="2"> D </td>
+        <td colspan="2"> 5 </td>
+      </tr>
+      <tr>
+        <td colspan="2">93456 </td>
+        <td colspan="2"> Ravi </td>
+        <td colspan="2"> 10 </td>
+        <td colspan="2">10 </td>
+        <td colspan="2"> F </td>
+        <td colspan="2"> 3</td>
+      </tr>
+    </tbody>
+    <tfoot>
+      
+     
+  </table>
+    </body>
+</html>
+from django.db import models
+
+class GPA(models.Model):
+    marks = models.IntegerField()
+    grade = models.CharField(max_length=2)
+
+    def __str__(self):
+        return self.grade
+
+class Student(models.Model):
+    Regno = models.IntegerField()
+    marks = models.ManyToManyField(GPA)
+
+    def calculate_sgpa(self):
+        total_marks = sum([x.marks for x in self.marks.all()])
+        total_credits = sum([x.credits for x in self.marks.all()])
+        sgpa = total_marks / total_credits
+        return sgpa
+
+
+        from django.db import models
+from BTco_ordinator.models import BTStudentRegistrations, BTSubjects
+from BTExamStaffDB.models import BTStudentInfo
+from BTExamStaffDB.models import BTGradePoints
+
+# Create your models here.
+
+class BTMinorSubjects(models.Model):
+    subject_id = models.ForeignKey(BTSubjects, on_delete=models.CASCADE)
+    subject_code = models.CharField(max_length=20)
+    subject_name = models.CharField(max_length=100)
+    semester = models.IntegerField()
+    credits = models.IntegerField()
+    is_lab = models.BooleanField(default=False)
+
+    class Meta:
+        db_table = 'BTMinorSubjects'
+        constraints = [
+            models.UniqueConstraint(fields=['subject_id'], name='unique BTMinorSubjects_subject_id'),
+        ]
+        managed = True
+
+
+class BTMinorMarks(models.Model):
+    Registration = models.ForeignKey(BTStudentRegistrations, on_delete=models.CASCADE)
+    Subject = models.ForeignKey(BTMinorSubjects, on_delete=models.CASCADE)
+    Marks = models.TextField()
+    TotalMarks = models.IntegerField()
+    RegId = models.IntegerField(default=None)
+
+    class Meta:
+        db_table = 'BTMinorMarks'
+        constraints = [
+            models.UniqueConstraint(fields=['Registration', 'Subject'], name='unique BTMinorMarks_Registration_Subject'),
+        ]
+        managed = True
+
+    def get_total_marks(self):
+        marks_dis = self.Marks.split(',')
+        marks_dis = [mark.split('+') for mark in marks_dis]
+        subject = self.Subject
+        ratio = subject.subject_id.DistributionRatio.split(':')
+        total_parts = 0
+        for part in ratio:
+            total_parts += int(part)
+        total = 0
+        for index in range(len(marks_dis)):
+            marks_row = marks_dis[index]
+            sub_total = 0
+            for mark in marks_row:
+                sub_total += float(mark)
+            total += sub_total*int(ratio[index])
+        return math.ceil(total/total_parts)
+
+
+class BTMinorGrade(models.Model):
+    RegId = models.IntegerField(default=None)
+    RegEventId = models.IntegerField(default=None)
+    Subject = models.ForeignKey(BTMinorSubjects, on_delete=models.CASCADE)
+    Regulation = models.FloatField(default=None)
+    Grade = models.CharField(max_length=2, default=None)
+    AttGrade = models.CharField(max_length=2, default=None)
+    Points = models.FloatField(default=None)
+
+    class Meta:
+        db_table = 'BTMinorGrade'
+        constraints = [
+            models.UniqueConstraint(fields=['RegId', 'Subject'], name='unique BTMinorGrade_RegId_Subject'),
+        ]
+        managed = True
+
+
+class BTMinorGradePoints(models.Model):
+    grade = models.CharField(max_length=2)
+    grade_points = models.FloatField()
+
+    class Meta:
+        db_table = 'BTMinorGradePoints'
+        constraints = [
+            models.UniqueConstraint(fields=['grade'], name='unique BTMinorGradePoints_grade'),
+        ]
+        managed = True
+
+
+class BTMinorDegree(models.Model):
+    RegNo = models.ForeignKey(BTStudentInfo, on_delete=models.CASCADE)
+    Semester = models.IntegerField()
+    CGPA = models.FloatField(default=0)
+
+    class Meta:
+        db_table = 'BTMinorDegree'
+        constraints = [
+            models.UniqueConstraint(fields=['RegNo', 'Semester'], name='unique BTMinorDegree_RegNo_Semester'),
+        ]
+        managed = True

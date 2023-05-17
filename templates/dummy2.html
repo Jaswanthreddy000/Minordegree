@@ -1,0 +1,120 @@
+from django.db import models
+from BTco_ordinator.models import BTStudentRegistrations, BTSubjects
+from BTExamStaffDB.models import BTStudentInfo
+from BTExamStaffDB.models import BTGradePoints
+
+# Create your models here.
+
+class BTMinorSubjects(models.Model):
+    subject_id = models.ForeignKey(BTSubjects, on_delete=models.CASCADE)
+    subject_code = models.CharField(max_length=20)
+    subject_name = models.CharField(max_length=100)
+    semester = models.IntegerField()
+    credits = models.IntegerField()
+    is_lab = models.BooleanField(default=False)
+
+    class Meta:
+        db_table = 'BTMinorSubjects'
+        constraints = [
+            models.UniqueConstraint(fields=['subject_id'], name='unique BTMinorSubjects_subject_id'),
+        ]
+        managed = True
+
+
+class BTMinorMarks(models.Model):
+    Registration = models.ForeignKey(BTStudentRegistrations, on_delete=models.CASCADE)
+    Subject = models.ForeignKey(BTMinorSubjects, on_delete=models.CASCADE)
+    Marks = models.TextField()
+    TotalMarks = models.IntegerField()
+    RegId = models.IntegerField(default=None)
+
+    class Meta:
+        db_table = 'BTMinorMarks'
+        constraints = [
+            models.UniqueConstraint(fields=['Registration', 'Subject'], name='unique BTMinorMarks_Registration_Subject'),
+        ]
+        managed = True
+
+    def get_total_marks(self):
+        marks_dis = self.Marks.split(',')
+        marks_dis = [mark.split('+') for mark in marks_dis]
+        subject = self.Subject
+        ratio = subject.subject_id.DistributionRatio.split(':')
+        total_parts = 0
+        for part in ratio:
+            total_parts += int(part)
+        total = 0
+        for index in range(len(marks_dis)):
+            marks_row = marks_dis[index]
+            sub_total = 0
+            for mark in marks_row:
+                sub_total += float(mark)
+            total += sub_total*int(ratio[index])
+        return math.ceil(total/total_parts)
+
+
+class BTMinorGrade(models.Model):
+    RegId = models.IntegerField(default=None)
+    RegEventId = models.IntegerField(default=None)
+    Subject = models.ForeignKey(BTMinorSubjects, on_delete=models.CASCADE)
+    Regulation = models.FloatField(default=None)
+    Grade = models.CharField(max_length=2, default=None)
+    AttGrade = models.CharField(max_length=2, default=None)
+    Points = models.FloatField(default=None)
+
+    class Meta:
+        db_table = 'BTMinorGrade'
+        constraints = [
+            models.UniqueConstraint(fields=['RegId', 'Subject'], name='unique BTMinorGrade_RegId_Subject'),
+        ]
+        managed = True
+
+
+class BTMinorGradePoints(models.Model):
+    grade = models.CharField(max_length=2)
+    grade_points = models.FloatField()
+
+    class Meta:
+        db_table = 'BTMinorGradePoints'
+        constraints = [
+            models.UniqueConstraint(fields=['grade'], name='unique BTMinorGradePoints_grade'),
+        ]
+        managed = True
+
+
+class BTMinorDegree(models.Model):
+    RegNo = models.ForeignKey(BTStudentInfo, on_delete=models.CASCADE)
+    Semester = models.IntegerField()
+    CGPA = models.FloatField(default=0)
+
+    class Meta:
+        db_table = 'BTMinorDegree'
+        constraints = [
+            models.UniqueConstraint(fields=['RegNo', 'Semester'], name='unique BTMinorDegree_RegNo_Semester'),
+        ]
+        managed = True
+
+
+        class CGPACalculator:
+        def __init__(self, marks_distribution, grade_points):
+            self.marks_distribution = marks_distribution
+            self.grade_points = grade_points
+    
+        def calculate_cgpa(self):
+            total_grade_points = 0
+            total_credits = 0
+    
+            for course in self.marks_distribution.courses:
+                credits = course.credit
+                grade = course.grade
+    
+                if grade in self.grade_points.grade_points:
+                    grade_point = self.grade_points.grade_points[grade]
+                    total_grade_points += credits * grade_point
+                    total_credits += credits
+    
+            if total_credits == 0:
+                return 0.0
+    
+            cgpa = total_grade_points / total_credits
+            return cgpa

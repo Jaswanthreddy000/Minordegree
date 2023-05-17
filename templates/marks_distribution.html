@@ -1,0 +1,78 @@
+
+
+<!DOCTYPE html>
+<html>
+<head>
+	<h1 class="name4">NIT ANDHRAPRADESH</h1>
+	<title>Set Grade Thresholds</title>
+</head>
+<body>
+	<h1>Set Grade Thresholds</h1>
+	<form method="post">
+		{% csrf_token %}
+		<div class="name">
+		<h3>Subject Code</h3>
+		<select name="subid">
+			<option value="CS201">CS201</option>
+			<option value="CS202">CS202</option>
+		  </select></div>
+		<fieldset>
+			<legend>Enter the thresholds for each grade</legend>
+			<p>
+				<label for="ex_threshold">Threshold for Ex grade:</label>
+				<input type="number" id="ex_threshold" name="ex_threshold" required>
+			</p>
+			<p>
+				<label for="a_threshold">Threshold for A grade:</label>
+				<input type="number" id="a_threshold" name="a_threshold" required>
+			</p>
+			<p>
+				<label for="b_threshold">Threshold for B grade:</label>
+				<input type="number" id="b_threshold" name="b_threshold" required>
+			</p>
+			<p>
+				<label for="c_threshold">Threshold for C grade:</label>
+				<input type="number" id="c_threshold" name="c_threshold" required>
+			</p>
+			<p>
+				<label for="d_threshold">Threshold for D grade:</label>
+				<input type="number" id="d_threshold" name="d_threshold" required>
+			</p>
+			<p>
+				<label for="p_threshold">Threshold for P grade:</label>
+				<input type="number" id="p_threshold" name="p_threshold" required>
+			</p>
+			<p>
+				<label for="r_threshold">Threshold for F grade:</label>
+				<input type="number" id="r_threshold" name="r_threshold" required>
+			</p>
+			<p>
+				<input type="submit" value="Submit">
+			</p>
+		</fieldset>
+	</form>
+</body>
+<style>
+	  .name4{
+    padding-top: 0%;
+    margin-top: 0%;
+    text-align: center;
+    font-size: 30px;
+    box-shadow: 2cm;
+    background-color: whitesmoke;
+    border-radius: 1cm;
+    border-color: black;
+	  }
+	.name{
+		display: flex;
+	}
+	.name > select {
+		margin-left: 40px;
+		margin-top: 13px;
+		width: 100px;
+		height: 30px
+	
+	}
+  
+</style>
+</html>

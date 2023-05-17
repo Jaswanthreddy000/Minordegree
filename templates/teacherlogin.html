@@ -1,0 +1,71 @@
+
+
+{% block content %}
+<div class="name4" >NATIONAL INSTITUTE OF  ANDHRAPRADESH</div>
+<div class="login-form">
+  <h2>Teacher Login</h2>
+    {% csrf_token %}
+    <label for="Email">Email</label>
+    <input type="password" id="email" name="email" placeholder="Enter your Email">
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password" placeholder="Enter your password">
+    <button type="submit"><a href="/marks_distribution" >Login</a></button>
+</div>
+{% endblock %}
+
+{% block styles %}
+<style>
+  .login-form {
+    width: 400px;
+    margin: 50px auto;
+    padding: 30px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  }
+  h2 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+  input[type="text"],
+  input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    font-size: 16px;
+    color: #555;
+  }
+  button[type="submit"] {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #0066cc;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  button[type="submit"]:hover {
+    background-color: #0059b3;
+  }
+  .name4{
+    padding-top: 0%;
+    margin-top: 0%;
+    text-align: center;
+    font-size: 30px;
+    box-shadow: 2cm;
+    background-color: whitesmoke;
+    border-radius: 1cm;
+    border-color: black;
+
+  }
+</style>
+{% endblock %}

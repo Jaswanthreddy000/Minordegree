@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Student SGPA</title>
+</head>
+<body>
+	<h1>Student Details</h1>
+	<p>Name: {{ student.name }}</p>
+	<p>Roll No: {{ student.roll_no }}</p>
+	<p>Department: {{ student.department }}</p>
+	
+	<h2>Course Details</h2>
+	<table>
+		<thead>
+			<tr>
+				<th>Course Code</th>
+				<th>Credits</th>
+				<th>Grade</th>
+				<th>Grade Points</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for course in courses %}
+			<tr>
+				<td>{{ course.subcode }}</td>
+				<td>{{ course.credits }}</td>
+				<td>{{ course.grade }}</td>
+				<td>{{ course.grade_points }}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	
+	<h2>SGPA</h2>
+	<p>Final SGPA: {{ sgpa }}</p>
+</body>
+</html>
+
+
+
+
+
